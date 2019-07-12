@@ -72,8 +72,8 @@ public:
       if (!totg.computeTimeStamps(*res.trajectory_, req.max_velocity_scaling_factor,
                                   req.max_acceleration_scaling_factor))
       {
-          ROS_WARN("Time parametrization for the solution path failed.");
-          result = false;
+        ROS_WARN("Time parametrization for the solution path failed.");
+        result = false;
       }
     }
 
