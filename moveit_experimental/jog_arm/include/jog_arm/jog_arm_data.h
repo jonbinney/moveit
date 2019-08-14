@@ -37,8 +37,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef JOG_ARM_JOG_ARM_DATA_H
-#define JOG_ARM_JOG_ARM_DATA_H
+#pragma once
 
 #include <control_msgs/JointJog.h>
 #include <geometry_msgs/TwistStamped.h>
@@ -75,7 +74,7 @@ struct JogArmShared
   trajectory_msgs::JointTrajectory outgoing_command;
 
   // Timestamp of incoming commands
-  ros::Time incoming_cmd_stamp = ros::Time(0.);
+  ros::Time latest_nonzero_cmd_stamp = ros::Time(0.);
 
   // Indicates no collision, etc, so outgoing commands can be sent
   bool ok_to_publish = false;
@@ -93,4 +92,3 @@ struct JogArmParameters
   bool use_gazebo, check_collisions, publish_joint_positions, publish_joint_velocities, publish_joint_accelerations;
 };
 }
-#endif  // JOG_ARM_DATA_H

@@ -37,12 +37,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef JOG_ARM_JOG_CALCS_H
-#define JOG_ARM_JOG_CALCS_H
+#pragma once
 
 #include <jog_arm/jog_arm_data.h>
 #include <jog_arm/low_pass_filter.h>
-#include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_monitor/planning_scene_monitor.h>
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <std_msgs/Bool.h>
@@ -54,19 +52,17 @@ namespace jog_arm
 class JogCalcs
 {
 public:
-  JogCalcs(const JogArmParameters parameters, JogArmShared& shared_variables, pthread_mutex_t& mutex,
+  JogCalcs(const JogArmParameters& parameters, JogArmShared& shared_variables, pthread_mutex_t& mutex,
            const robot_model_loader::RobotModelLoaderPtr& model_loader_ptr);
 
 protected:
   ros::NodeHandle nh_;
 
-  moveit::planning_interface::MoveGroupInterface move_group_;
-
   sensor_msgs::JointState incoming_jts_;
 
   bool cartesianJogCalcs(geometry_msgs::TwistStamped& cmd, JogArmShared& shared_variables, pthread_mutex_t& mutex);
 
-  bool jointJogCalcs(const control_msgs::JointJog& cmd, JogArmShared& shared_variables);
+  bool jointJogCalcs(const control_msgs::JointJog& cmd, JogArmShared& shared_variables, pthread_mutex_t& mutex);
 
   // Parse the incoming joint msg for the joints of our MoveGroup
   bool updateJoints();
@@ -83,8 +79,9 @@ protected:
   // Reset the data stored in low-pass filters so the trajectory won't jump when jogging is resumed.
   void resetVelocityFilters();
 
-  // Avoid a singularity or other issue. Is handled differently for position vs. velocity control.
-  void halt(trajectory_msgs::JointTrajectory& jt_traj);
+  // Suddenly halt for a joint limit or other critical issue.
+  // Is handled differently for position vs. velocity control.
+  void suddenHalt(trajectory_msgs::JointTrajectory& jt_traj);
 
   void publishWarning(bool active) const;
 
@@ -137,5 +134,3 @@ protected:
   uint num_joints_;
 };
 }  // namespace jog_arm
-
-#endif  // JOG_ARM_JOG_CALCS_H
